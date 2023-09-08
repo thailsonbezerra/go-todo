@@ -7,7 +7,7 @@ import (
 )
 
 func OpenConn() (*sql.DB, error) {
-	connStr := "host=localhost port=8432 user=postgres password=1234 dbname=postgres sslmode=disable"
+	connStr := "host=db port=5432 user=postgres password=1234 dbname=postgres sslmode=disable"
 
 	db, err := sql.Open("postgres", connStr)
 	if err != nil {
