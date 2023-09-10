@@ -4,8 +4,8 @@ import (
 	"fmt"
 	"log"
 
-	"github.com/thailsonbezerra/go-todo/database"
-	"github.com/thailsonbezerra/go-todo/models/todos"
+	"github.com/thailsonbezerra/go-todo/src/config/database"
+	"github.com/thailsonbezerra/go-todo/src/models/todos"
 )
 
 func main() {
@@ -15,9 +15,7 @@ func main() {
 	}
 	defer db.Close()
 
-	fmt.Println("Conexão com o banco de dados bem-sucedida!")
-
-	todo := todos.Todo{ID: 1, Created_at: "2023-09-08",Title: "Teste", Description: "Teste", Completed: false}
+	todo := todos.Todo{ID: 1, CreatedAt: "2023-09-08",Title: "Teste", Description: "Teste", Completed: false}
 	fmt.Print(todo)
 
 }
