@@ -1,6 +1,7 @@
 package todos
 
 import (
+	"database/sql"
 	"encoding/json"
 	"log"
 	"net/http"
@@ -60,6 +61,10 @@ func BuscarTodo(w http.ResponseWriter, r *http.Request) {
 	db := database.GetDB()
 	err := db.QueryRow("SELECT * FROM todos WHERE id = $1", id).Scan(&todo.ID, &todo.CreatedAt, &todo.Title, &todo.Description, &todo.Completed)
 	if err != nil {
+		if err == sql.ErrNoRows {
+			http.NotFound(w, r) // Retorna status 404 se o TODO não for encontrado
+			return
+		}
 		log.Fatal(err)
 	}
 
@@ -67,7 +72,7 @@ func BuscarTodo(w http.ResponseWriter, r *http.Request) {
 }
 
 func AtualizarTodo(w http.ResponseWriter, r *http.Request) {
-	w.Write([]byte("atualizando um TODO!"))
+	w.Write([]byte("Atualizando um TODO!"))
 }
 
 func DeletarTodo(w http.ResponseWriter, r *http.Request) {
