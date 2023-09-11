@@ -3,36 +3,43 @@ package database
 import (
 	"database/sql"
 	"fmt"
-	"log"
 	"os"
 
 	"github.com/joho/godotenv"
 	_ "github.com/lib/pq"
 )
-func OpenConn() (*sql.DB, error) {
+
+var db *sql.DB
+
+func InitDB() error {
 	if err := godotenv.Load(); err != nil {
-		log.Fatal("Erro ao carregar as variáveis de ambiente")
-}
+		return err
+	}
 	connStr := fmt.Sprintf(
-		"host=%s port=%s user=%s password=%s dbname=%s sslmode=disable", 
+		"host=%s port=%s user=%s password=%s dbname=%s sslmode=disable",
 		os.Getenv("DB_HOST"),
 		os.Getenv("DB_PORT"),
 		os.Getenv("DB_USER"),
 		os.Getenv("DB_PASSWORD"),
 		os.Getenv("DB_DATABASE"),
 	)
-	db, err := sql.Open("postgres", connStr)
+	var err error
+	db, err = sql.Open("postgres", connStr)
 	if err != nil {
-		return nil, err
+		return err
 	}
 	err = db.Ping()
 	if err != nil {
 		db.Close()
-		return nil, err
+		return err
 	}
 
-	fmt.Println("Conexão com o banco de dados bem-sucedida!")
+	fmt.Printf("Conexão com o banco de dados realizada.\n")
 
+	return nil
 
-	return db, nil
+}
+
+func GetDB() *sql.DB {
+	return db
 }
