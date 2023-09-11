@@ -18,7 +18,7 @@ func CriarTodo(w http.ResponseWriter, r *http.Request) {
 
 	db := database.GetDB()
 
-	err := db.QueryRow("INSERT INTO todos (title, description) VALUES ($1, $2) RETURNING id", todo.Title, todo.Description).Scan(&todo.ID)
+	err := db.QueryRow("INSERT INTO todos (title, description) VALUES ($1, $2) RETURNING id, createdAt", todo.Title, todo.Description).Scan(&todo.ID, &todo.CreatedAt)
 	if err != nil {
 		log.Fatal(err)
 	}
