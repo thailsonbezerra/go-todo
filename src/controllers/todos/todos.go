@@ -59,7 +59,7 @@ func BuscarTodo(w http.ResponseWriter, r *http.Request) {
 
 	var todo modelTodo.Todo
 	db := database.GetDB()
-	err := db.QueryRow("SELECT * FROM todos WHERE id = $1", id).Scan(&todo.ID, &todo.CreatedAt, &todo.Title, &todo.Description, &todo.Completed)
+	err := db.QueryRow("SELECT * FROM todos WHERE id = $1", id, ).Scan(&todo.ID, &todo.Title, &todo.Description, &todo.Completed)
 	if err != nil {
 		if err == sql.ErrNoRows {
 			http.NotFound(w, r) // Retorna status 404 se o TODO não for encontrado
@@ -72,9 +72,36 @@ func BuscarTodo(w http.ResponseWriter, r *http.Request) {
 }
 
 func AtualizarTodo(w http.ResponseWriter, r *http.Request) {
-	w.Write([]byte("Atualizando um TODO!"))
+	vars := mux.Vars(r)
+	id := vars["id"]
+
+	var todo modelTodo.Todo
+	json.NewDecoder(r.Body).Decode(&todo)
+
+	db := database.GetDB()
+	statement, err := db.Prepare("UPDATE todos SET title = $2, description = $3, completed = $4 WHERE id = $1")
+	if err != nil {
+		log.Fatal(err)
+	}
+	defer statement.Close()
+
+	if _, err = statement.Exec(id, todo.Title, todo.Description, todo.Completed); err != nil {
+		log.Fatal(err)
+	}
+
+	json.NewEncoder(w).Encode("Todo atualizado")
 }
 
 func DeletarTodo(w http.ResponseWriter, r *http.Request) {
-	w.Write([]byte("Deletando um TODO!"))
+	vars := mux.Vars(r)
+	id := vars["id"]
+
+	db := database.GetDB()
+	_, err := db.Exec("DELETE FROM todos WHERE id = $1", id)
+	if err != nil {
+		log.Fatal(err)
+	}
+
+	json.NewEncoder(w).Encode("Todo deletado")
+
 }
